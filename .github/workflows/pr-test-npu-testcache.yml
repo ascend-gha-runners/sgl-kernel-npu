@@ -35,12 +35,12 @@ jobs:
           clean: true
       - name: Install sccache (if not pre-installed)
         run: |
-          sleep 600
+          # sleep 600
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
           apt update && apt install -y curl
-          curl -4 --http1.1 -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-aarch64-unknown-linux-musl.tar.gz | tar xz
-          sudo mv sccache /usr/local/bin/
+          curl -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz | tar xz
+          mv sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
       - name: Configure sccache for S3-compatible OBS
         run: |
