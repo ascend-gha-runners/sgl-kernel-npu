@@ -38,7 +38,7 @@ jobs:
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
           apt update && apt install -y curl
-          curl -L https://github.com/mozilla/sccache/releases/latest/download/sccache-aarch64-unknown-linux-musl.tar.gz | tar xz
+          curl -4 --http1.1 -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-aarch64-unknown-linux-musl.tar.gz | tar xz
           sudo mv sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
       - name: Configure sccache for S3-compatible OBS
