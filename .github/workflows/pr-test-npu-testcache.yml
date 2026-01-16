@@ -25,47 +25,73 @@ jobs:
     container:
       image: swr.cn-southwest-2.myhuaweicloud.com/base_image/ascend-ci/cann:8.3.rc1-a3-ubuntu22.04-py3.11
     steps:
-      - name: Clean git config
-        run: |
-          CONFIG_KEY='http.https://gh-proxy.test.osinfra.cn/.extraheader'
-          git config --global --unset "$CONFIG_KEY" || true
-
-      - name: Clean workspace
-        run: |
-          sudo rm -rf --one-file-system "$GITHUB_WORKSPACE"/* "$GITHUB_WORKSPACE"/.* 2>/dev/null || true
-
+#      - name: Clean git config
+#        run: |
+#          CONFIG_KEY='http.https://gh-proxy.test.osinfra.cn/.extraheader'
+#          git config --global --unset "$CONFIG_KEY" || true
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           clean: true
-
-      - name: Install dependencies
+      - name: Install sccache (if not pre-installed)
         run: |
-          # speed up by using infra cache services
-          CACHING_URL="cache-service.nginx-pypi-cache.svc.cluster.local"
-          sed -Ei "s@(ports|archive).ubuntu.com@${CACHING_URL}:8081@g" /etc/apt/sources.list
-          pip config set global.index-url http://${CACHING_URL}/pypi/simple
-          pip config set global.trusted-host ${CACHING_URL}
-
-          bash scripts/npu_ci_install_dependency.sh
-
-      - name: Prepare Deepep
-        run: bash scripts/prepare_deepep_in_container.sh
-
-  finish:
-    if: always()
-    needs:
-      - test-all-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check all dependent job statuses
+          # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
+          # 例如 Ubuntu/Debian
+          sudo apt-get update && sudo apt-get install -y curl
+          curl -L https://github.com/mozilla/sccache/releases/latest/download/sccache-aarch64-unknown-linux-musl.tar.gz | tar xz
+          sudo mv sccache /usr/local/bin/
+          chmod +x /usr/local/bin/sccache
+      - name: Configure sccache for S3-compatible OBS
         run: |
-          results=(${{ join(needs.*.result, ' ') }})
-          for result in "${results[@]}"; do
-            if [ "$result" = "failure" ] || [ "$result" = "cancelled" ]; then
-              echo "Job failed with result: $result"
-              exit 1
-            fi
-          done
-          echo "All jobs completed successfully"
-          exit 0
+          # 设置 sccache 使用 S3 后端（兼容 OBS）
+          export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
+          export SCCACHE_ENDPOINT="obs.cn-southwest-2.myhuaweicloud.com"  # 替换为你的 OBS endpoint
+          export SCCACHE_REGION="cn-southwest-2"                         # 替换为你的区域
+          export SCCACHE_S3_USE_SSL=true                             # 根据实际情况设为 true/false
+          export SCCACHE_DIR="/tmp/sccache-fallback"                 # 本地 fallback 缓存目录
+
+          # 注意：不设置 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+          # 依赖云服务器的 IAM 角色自动获取临时凭证（通过实例元数据）
+
+          # 测试 sccache 是否能连接
+          sccache --show-stats
+
+#      - name: Clean workspace
+#        run: |
+#          sudo rm -rf --one-file-system "$GITHUB_WORKSPACE"/* "$GITHUB_WORKSPACE"/.* 2>/dev/null || true
+#
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#        with:
+#          clean: true
+#
+#      - name: Install dependencies
+#        run: |
+#          # speed up by using infra cache services
+#          CACHING_URL="cache-service.nginx-pypi-cache.svc.cluster.local"
+#          sed -Ei "s@(ports|archive).ubuntu.com@${CACHING_URL}:8081@g" /etc/apt/sources.list
+#          pip config set global.index-url http://${CACHING_URL}/pypi/simple
+#          pip config set global.trusted-host ${CACHING_URL}
+#
+#          bash scripts/npu_ci_install_dependency.sh
+#
+#      - name: Prepare Deepep
+#        run: bash scripts/prepare_deepep_in_container.sh
+#
+#  finish:
+#    if: always()
+#    needs:
+#      - test-all-build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Check all dependent job statuses
+#        run: |
+#          results=(${{ join(needs.*.result, ' ') }})
+#          for result in "${results[@]}"; do
+#            if [ "$result" = "failure" ] || [ "$result" = "cancelled" ]; then
+#              echo "Job failed with result: $result"
+#              exit 1
+#            fi
+#          done
+#          echo "All jobs completed successfully"
+#          exit 0
