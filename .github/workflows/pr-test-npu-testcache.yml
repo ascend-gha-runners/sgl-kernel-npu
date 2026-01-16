@@ -35,6 +35,7 @@ jobs:
           clean: true
       - name: Install sccache (if not pre-installed)
         run: |
+          sleep 600
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
           apt update && apt install -y curl
