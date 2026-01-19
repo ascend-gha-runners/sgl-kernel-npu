@@ -55,6 +55,7 @@ jobs:
           mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
           # 设置 sccache 使用 S3 后端（兼容 OBS）
+          sleep 1000
           export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
           export SCCACHE_ENDPOINT="obs.cn-southwest-2.myhuaweicloud.com"  # 替换为你的 OBS endpoint
           export SCCACHE_REGION="cn-southwest-2"                         # 替换为你的区域
