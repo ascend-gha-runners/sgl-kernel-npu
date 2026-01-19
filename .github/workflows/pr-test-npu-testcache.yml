@@ -84,6 +84,7 @@ jobs:
           export CC="sccache gcc"
           export CXX="sccache g++"
           export RUSTC_WRAPPER="sccache"
+          apt update && apt install -y g++
           bash scripts/prepare_deepep_in_container.sh
           sccache -s
 
