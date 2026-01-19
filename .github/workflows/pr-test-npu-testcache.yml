@@ -62,11 +62,11 @@ jobs:
           #export SCCACHE_REGION="cn-southwest-2" 
           #export SCCACHE_S3_USE_SSL=true
           #export SCCACHE_DIR="/tmp/sccache-fallback" 
-          sccache --start-server
+          #sccache --start-server
           # 注意：不设置 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
           # 依赖云服务器的 IAM 角色自动获取临时凭证（通过实例元数据）
           # 测试 sccache 是否能连接
-          sccache --show-stats
+          #sccache --show-stats
 
       - name: Cache dependencies
         uses: runs-on/cache@v4
