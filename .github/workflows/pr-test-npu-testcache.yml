@@ -41,12 +41,20 @@ jobs:
           # sleep 600
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
-          apt update && apt install -y curl
-          curl -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz | tar xz
-          mv sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
+          FILENAME="sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz"
+          CACHE_DIR="/root/.cache/sccache"
+          if [ -f "$CACHE_DIR/$FILENAME" ]; then
+            echo "Found cached sccache package successfully"
+          else
+            echo "sccache package not found in cache. Downloading..."
+            mkdir -p "$CACHE_DIR"
+            apt update && apt install -y curl
+            curl --connect-timeout 30 --retry 3 -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz -o "$CACHE_DIR/$FILENAME"
+          fi
+          mkdir -p /tmp/sccache
+          tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
+          mv /tmp/sccache/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
-      - name: Configure sccache for S3-compatible OBS
-        run: |
           export CC="sccache gcc"
           export CXX="sccache g++"
           export RUSTC_WRAPPER="sccache"
@@ -74,7 +82,9 @@ jobs:
           bash scripts/npu_ci_install_dependency.sh
 
       - name: Prepare Deepep
-        run: bash scripts/prepare_deepep_in_container.sh
+        run: |
+          bash scripts/prepare_deepep_in_container.sh
+          sccache --show-stats
 
   finish:
     if: always()
