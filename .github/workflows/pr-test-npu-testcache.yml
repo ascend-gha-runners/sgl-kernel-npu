@@ -38,7 +38,6 @@ jobs:
           clean: true
       - name: Install sccache (if not pre-installed)
         run: |
-          sleep 800
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
           FILENAME="sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz"
@@ -53,7 +52,7 @@ jobs:
           fi
           mkdir -p /tmp/sccache
           tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
-          mv /tmp/sccache/sccache /usr/local/bin/
+          mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
           export CC="sccache gcc"
           export CXX="sccache g++"
