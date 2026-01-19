@@ -36,37 +36,37 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install sccache (if not pre-installed)
-        run: |
-          # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
-          # 例如 Ubuntu/Debian
-          FILENAME="sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz"
-          CACHE_DIR="/shared-data/sccache"
-          if [ -f "$CACHE_DIR/$FILENAME" ]; then
-            echo "Found cached sccache package successfully"
-          else
-            echo "sccache package not found in cache. Downloading..."
-            mkdir -p "$CACHE_DIR"
-            apt update && apt install -y curl
-            curl --connect-timeout 30 --retry 3 -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz -o "$CACHE_DIR/$FILENAME"
-          fi
-          mkdir -p /tmp/sccache
-          tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
-          mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
-          chmod +x /usr/local/bin/sccache
-          export SCCACHE_REDIS=redis://10.0.0.97:6379
-          # 设置 sccache 使用 S3 后端（兼容 OBS）
-          #sleep 1000
-          #export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
-          #export SCCACHE_ENDPOINT="https://obs-guiiyang1-ascend-test.obs.cn-southwest-2.myhuaweicloud.com"
-          #export SCCACHE_REGION="cn-southwest-2" 
-          #export SCCACHE_S3_USE_SSL=true
-          #export SCCACHE_DIR="/tmp/sccache-fallback" 
-          #sccache --start-server
-          # 注意：不设置 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
-          # 依赖云服务器的 IAM 角色自动获取临时凭证（通过实例元数据）
-          # 测试 sccache 是否能连接
-          #sccache --show-stats
+#      - name: Install sccache (if not pre-installed)
+#        run: |
+#          # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
+#          # 例如 Ubuntu/Debian
+#          FILENAME="sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz"
+#          CACHE_DIR="/shared-data/sccache"
+#          if [ -f "$CACHE_DIR/$FILENAME" ]; then
+#            echo "Found cached sccache package successfully"
+#          else
+#            echo "sccache package not found in cache. Downloading..."
+#            mkdir -p "$CACHE_DIR"
+#            apt update && apt install -y curl
+#            curl --connect-timeout 30 --retry 3 -L https://github.com/mozilla/sccache/releases/download/v0.13.0/sccache-v0.13.0-aarch64-unknown-linux-musl.tar.gz -o "$CACHE_DIR/$FILENAME"
+#          fi
+#          mkdir -p /tmp/sccache
+#          tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
+#          mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
+#          chmod +x /usr/local/bin/sccache
+#          export SCCACHE_REDIS=redis://10.0.0.97:6379
+#          # 设置 sccache 使用 S3 后端（兼容 OBS）
+#          #sleep 1000
+#          #export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
+#          #export SCCACHE_ENDPOINT="https://obs-guiiyang1-ascend-test.obs.cn-southwest-2.myhuaweicloud.com"
+#          #export SCCACHE_REGION="cn-southwest-2"
+#          #export SCCACHE_S3_USE_SSL=true
+#          #export SCCACHE_DIR="/tmp/sccache-fallback"
+#          #sccache --start-server
+#          # 注意：不设置 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+#          # 依赖云服务器的 IAM 角色自动获取临时凭证（通过实例元数据）
+#          # 测试 sccache 是否能连接
+#          #sccache --show-stats
 
       - name: Cache dependencies
         uses: runs-on/cache@v4
@@ -82,6 +82,7 @@ jobs:
           RUNS_ON_S3_BUCKET_ENDPOINT: https://obs-guiiyang1-ascend-test.obs.cn-southwest-2.myhuaweicloud.com
           AWS_ACCESS_KEY_ID: ${{ secrets.HW_OBS_AK }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.HW_OBS_SK }}
+          AWS_REGION: cn-southwest-2
 
       - name: Install dependencies
         run: |
@@ -93,13 +94,13 @@ jobs:
 
           bash scripts/npu_ci_install_dependency.sh
 
-      - name: Prepare Deepep
-        run: |
-          #export CC="sccache gcc"
-          #export CXX="sccache g++"
-          #export RUSTC_WRAPPER="sccache"
-          bash scripts/prepare_deepep_in_container.sh
-          sccache -s
+#      - name: Prepare Deepep
+#        run: |
+#          #export CC="sccache gcc"
+#          #export CXX="sccache g++"
+#          #export RUSTC_WRAPPER="sccache"
+#          bash scripts/prepare_deepep_in_container.sh
+#          sccache -s
 
   finish:
     if: always()
