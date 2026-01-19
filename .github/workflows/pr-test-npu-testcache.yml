@@ -54,13 +54,14 @@ jobs:
           tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
           mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
+          export SCCACHE_REDIS=redis://10.0.0.97:6379
           # 设置 sccache 使用 S3 后端（兼容 OBS）
-          sleep 1000
-          export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
-          export SCCACHE_ENDPOINT="obs.cn-southwest-2.myhuaweicloud.com"  # 替换为你的 OBS endpoint
-          export SCCACHE_REGION="cn-southwest-2"                         # 替换为你的区域
-          export SCCACHE_S3_USE_SSL=true                             # 根据实际情况设为 true/false
-          export SCCACHE_DIR="/tmp/sccache-fallback"                 # 本地 fallback 缓存目录
+#          sleep 1000
+#          export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
+#          export SCCACHE_ENDPOINT="https://obs-guiiyang1-ascend-test.obs.cn-southwest-2.myhuaweicloud.com"  # 替换为你的 OBS endpoint
+#          export SCCACHE_REGION="cn-southwest-2"                         # 替换为你的区域
+#          export SCCACHE_S3_USE_SSL=true                             # 根据实际情况设为 true/false
+#          export SCCACHE_DIR="/tmp/sccache-fallback"                 # 本地 fallback 缓存目录
           sccache --start-server
           # 注意：不设置 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
           # 依赖云服务器的 IAM 角色自动获取临时凭证（通过实例元数据）
