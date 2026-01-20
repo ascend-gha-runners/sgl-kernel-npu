@@ -44,6 +44,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.HW_OBS_AK }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.HW_OBS_SK }}
           SCCACHE_REGION: cn-southwest-2
+          SCCACHE_S3_ENABLE_VIRTUAL_HOST_STYLE: true
         run: |
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
