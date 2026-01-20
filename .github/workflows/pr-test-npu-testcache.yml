@@ -37,6 +37,13 @@ jobs:
         with:
           clean: true
       - name: Install sccache (if not pre-installed)
+        env:
+          # 👇 指定你的 OBS bucket（必须用 virtual-hosted 域名！）
+          SCCACHE_BUCKET: obs-guiiyang1-ascend-test
+          SCCACHE_ENDPOINT: https://obs.cn-southwest-2.myhuaweicloud.com
+          AWS_ACCESS_KEY_ID: ${{ secrets.HW_OBS_AK }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.HW_OBS_SK }}
+          SCCACHE_REGION: cn-southwest-2
         run: |
           # 如果你的自托管 Runner 没有预装 sccache，可以在这里安装
           # 例如 Ubuntu/Debian
@@ -54,14 +61,9 @@ jobs:
           tar -xzf "$CACHE_DIR/$FILENAME" -C /tmp/sccache
           mv /tmp/sccache/sccache-v0.13.0-aarch64-unknown-linux-musl/sccache /usr/local/bin/
           chmod +x /usr/local/bin/sccache
-          export SCCACHE_REDIS=redis://10.0.0.97:6379
+          #export SCCACHE_REDIS=redis://10.0.0.97:6379
           # 设置 sccache 使用 S3 后端（兼容 OBS）
           #sleep 1000
-          export SCCACHE_BUCKET="obs-guiiyang1-ascend-test"
-          export SCCACHE_ENDPOINT="https://obs.cn-southwest-2.myhuaweicloud.com"
-          export SCCACHE_REGION="cn-southwest-2"
-          AWS_ACCESS_KEY_ID: ${{ secrets.HW_OBS_AK }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.HW_OBS_SK }}
           #export SCCACHE_S3_USE_SSL=true
           #export SCCACHE_DIR="/tmp/sccache-fallback"
           sccache --start-server
