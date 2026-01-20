@@ -72,9 +72,9 @@ jobs:
         uses: runs-on/cache@v4
         with:
           path: ~/.cache/pip
-          key: ascend-pip-${{ runner.os }}-py${{ steps.python.outputs.version }}-${{ github.ref_name }}
+          key: ascend-pip-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ github.ref_name }}
           restore-keys: |
-            ascend-pip-${{ runner.os }}-py${{ steps.python.outputs.version }}-
+            ascend-pip-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-
             ascend-pip-${{ runner.os }}-
         env:
           # 👇 指定你的 OBS bucket（必须用 virtual-hosted 域名！）
@@ -84,15 +84,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.HW_OBS_SK }}
           AWS_REGION: cn-southwest-2
 
-#      - name: Install dependencies
-#        run: |
-#          # speed up by using infra cache services
-#          CACHING_URL="cache-service.nginx-pypi-cache.svc.cluster.local"
-#          sed -Ei "s@(ports|archive).ubuntu.com@${CACHING_URL}:8081@g" /etc/apt/sources.list
-#          pip config set global.index-url http://${CACHING_URL}/pypi/simple
-#          pip config set global.trusted-host ${CACHING_URL}
-#
-#          bash scripts/npu_ci_install_dependency.sh
+      - name: Install dependencies
+        run: |
+          # speed up by using infra cache services
+          CACHING_URL="cache-service.nginx-pypi-cache.svc.cluster.local"
+          sed -Ei "s@(ports|archive).ubuntu.com@${CACHING_URL}:8081@g" /etc/apt/sources.list
+          pip config set global.index-url http://${CACHING_URL}/pypi/simple
+          pip config set global.trusted-host ${CACHING_URL}
+
+          bash scripts/npu_ci_install_dependency.sh
 
 #      - name: Prepare Deepep
 #        run: |
