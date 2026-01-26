@@ -170,7 +170,7 @@ function(add_simple_kernel_compile)
   endif()
   # add Environment Variable Configurations of ccache
   set(_ASCENDC_ENV_VAR)
-  if(${CMAKE_CXX_COMPILER_LAUNCHER} MATCHES "ccache$")
+  if(${CMAKE_CXX_COMPILER_LAUNCHER} MATCHES "sccache$")
     list(APPEND _ASCENDC_ENV_VAR export ASCENDC_CCACHE_EXECUTABLE=${CMAKE_CXX_COMPILER_LAUNCHER} &&)
   endif()
 
