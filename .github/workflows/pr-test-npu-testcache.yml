@@ -79,8 +79,7 @@ jobs:
           path: ~/.cache/pip
           key: ascend-pip-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ github.ref_name }}
           restore-keys: |
-            ascend-pip-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-
-            ascend-pip-${{ runner.os }}-
+            ascend-pip-${{ runner.os }}-py
         env:
           # 👇 指定你的 OBS bucket（必须用 virtual-hosted 域名！）
           RUNS_ON_S3_BUCKET_CACHE: obs-guiiyang1-ascend-test

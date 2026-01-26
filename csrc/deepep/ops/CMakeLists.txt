@@ -7,7 +7,7 @@ if(SCCACHE_PROGRAM)
     set(CMAKE_C_COMPILER_LAUNCHER   ${SCCACHE_PROGRAM} CACHE PATH "C cache compiler (sccache)")
     set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE_PROGRAM} CACHE PATH "CXX cache compiler (sccache)")
     # 昇腾适配：添加 sccache 环境变量（bisheng 编译器基于 Clang）
-    set(ENV{SCCACHE_COMPILER} "clang")
+    # set(ENV{SCCACHE_COMPILER} "clang")
 endif()
 
 project(opp)
