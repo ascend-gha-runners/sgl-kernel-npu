@@ -1,4 +1,15 @@
 cmake_minimum_required(VERSION 3.16.0)
+
+find_program(SCCACHE_PROGRAM sccache)
+if(SCCACHE_PROGRAM)
+    message(STATUS "Found sccache: ${SCCACHE_PROGRAM}")
+    # 设置 C/CXX 编译器启动器（写入 CMake 缓存，全局生效）
+    set(CMAKE_C_COMPILER_LAUNCHER   ${SCCACHE_PROGRAM} CACHE PATH "C cache compiler (sccache)")
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE_PROGRAM} CACHE PATH "CXX cache compiler (sccache)")
+    # 昇腾适配：添加 sccache 环境变量（bisheng 编译器基于 Clang）
+    set(ENV{SCCACHE_COMPILER} "clang")
+endif()
+
 project(opp)
 
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
