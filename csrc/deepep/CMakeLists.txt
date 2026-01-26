@@ -15,8 +15,6 @@ if(SCCACHE_PROGRAM)
     # 设置 C/CXX 编译器启动器（写入 CMake 缓存，全局生效）
     set(CMAKE_C_COMPILER_LAUNCHER   ${SCCACHE_PROGRAM} CACHE PATH "C cache compiler (sccache)")
     set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE_PROGRAM} CACHE PATH "CXX cache compiler (sccache)")
-    # 昇腾适配：添加 sccache 环境变量（bisheng 编译器基于 Clang）
-    set(ENV{SCCACHE_COMPILER} "clang")
 endif()
 
 set(PROJECT_BUILD_PATH ${PROJECT_BINARY_DIR})
