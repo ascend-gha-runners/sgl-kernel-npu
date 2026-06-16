@@ -21,7 +21,7 @@ jobs:
     name: Build Cache - ${{ matrix.arch }} - CANN ${{ matrix.cann_version }}
     runs-on: ${{ matrix.runner }}
 
-    # 定义矩阵策略：覆盖 A3/A2 硬件 和 8.5.0/9.0.0 CANN 版本
+    #  定义矩阵策略：覆盖 A3/A2 硬件 和 8.5.0/9.0.0 CANN 版本
     strategy:
       matrix:
         include:
